@@ -98,7 +98,11 @@ def metric_format(metric, prefix=''):
     key = metric_key(metric, prefix)
     labels = ','.join(
         '{k}="{v}"'.format(k=k, v=v) for k, v in metric.labels.items())
-    value = decimal.Decimal(metric.value)
+    try:
+        value = decimal.Decimal(metric.value)
+    except decimal.InvalidOperation:
+        return '#{key}{{{labels}}} {value}'.format(
+            key=key, labels=labels, value=metric.value)
 
     return '{key}{{{labels}}} {value}'.format(
         key=key, labels=labels, value=value)
